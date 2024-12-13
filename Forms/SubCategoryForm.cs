@@ -41,7 +41,8 @@ namespace YashodipPlyAndHardware.Forms
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            SubcategoryView subview = new SubcategoryView();
+            AppDBContext dBContext = new AppDBContext();
+            SubcategoryView subview = new SubcategoryView(dBContext);
             if (txtSubCategory.Text != "" && btnSave.Text == "Save" && cmbCategory.SelectedIndex>=0)
             {
                 Subcategory subcategory = new Subcategory();
@@ -101,7 +102,7 @@ namespace YashodipPlyAndHardware.Forms
         }
         private void LoadCombobox()
         {
-            db = new AppDBContext();
+           AppDBContext db = new AppDBContext();
             var categories = db.Categories.ToList();
             cmbCategory.DataSource = categories;
             cmbCategory.DisplayMember = "CategoryName";
@@ -115,7 +116,7 @@ namespace YashodipPlyAndHardware.Forms
         private void btnAddCategory_Click(object sender, EventArgs e)
         {
             CategoryForm categoryForm =new CategoryForm();
-            categoryForm.ShowDialog();
+            categoryForm.Show();
             LoadCombobox();
         }
     }

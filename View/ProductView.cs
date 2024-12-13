@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using YashodipPlyAndHardware.Data;
 using YashodipPlyAndHardware.Forms;
 using YashodipPlyAndHardware.Models;
+using YashodipPly.View;
 
 namespace YashodipPlyAndHardware.View
 {
@@ -36,19 +37,19 @@ namespace YashodipPlyAndHardware.View
 
                 var Products = db.Products.Select(p => new
                 {
-                     Category = p.Subcategory.Category.CategoryName,
+                    Category = p.Subcategory.Category.CategoryName,
                     Subcategory = p.Subcategory.SubcategoryName,
-                    p.Quantity,
                     p.ProductName,
-                    p.Rate,
+                    p.Quantity,
                     p.CustomerRate,
-                     p.Description,
-                     p.ProductId
+                    p.Rate,
+                    p.Description,
+                    p.ProductId
                 }).ToList();
 
                 dataGridView1.DataSource = Products;
                 dataGridView1.Columns["ProductId"].Visible = false;
-                dataGridView1.Columns["Description"].Visible = false;
+                dataGridView1.Columns["Description"].Visible = true;
 
 
             }
@@ -56,7 +57,7 @@ namespace YashodipPlyAndHardware.View
             {
                 MessageBox.Show($"Error loading data: {ex.Message}");
             }
-
+           
         }
         private void LoadCatCombobox()
         {
@@ -99,17 +100,15 @@ namespace YashodipPlyAndHardware.View
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void panel1_Paint(object sender, PaintEventArgs e)
         {
-
+            // Add your painting logic here, or leave it empty if not needed
         }
-
-        private void ProductView_Load(object sender, EventArgs e)
+        private void editdelete()
         {
-            LoadProducts();
             DataGridViewButtonColumn editButtonColumn = new DataGridViewButtonColumn();
             editButtonColumn.Name = "Edit";
-            // editButtonColumn.HeaderText = "Edit";
+            editButtonColumn.HeaderText = "Edit";
             editButtonColumn.Text = "Edit";
             editButtonColumn.UseColumnTextForButtonValue = true;
             dataGridView1.Columns.Add(editButtonColumn);
@@ -117,11 +116,19 @@ namespace YashodipPlyAndHardware.View
             // Adding Delete button column
             DataGridViewButtonColumn deleteButtonColumn = new DataGridViewButtonColumn();
             deleteButtonColumn.Name = "Delete";
-            // deleteButtonColumn.HeaderText = "Delete";
+            deleteButtonColumn.HeaderText = "Delete";
             deleteButtonColumn.Text = "Delete";
             deleteButtonColumn.DefaultCellStyle.ForeColor = Color.Red;
             deleteButtonColumn.UseColumnTextForButtonValue = true;
             dataGridView1.Columns.Add(deleteButtonColumn);
+        }
+        private  void ProductView_Load(object sender, EventArgs e)
+        {
+           
+                LoadProducts();
+                editdelete();
+            dataGridView1.CellClick += dataGridView1_CellClick;
+
             LoadCatCombobox();
             cmbSub.Enabled = false;
             txtQty.Text = "0";
@@ -131,12 +138,13 @@ namespace YashodipPlyAndHardware.View
         {
             cmbSub.Enabled = true;
             LoadSubCatCombobox();
-          
+
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            AppDBContext db = new AppDBContext(); SubcategoryView subview = new SubcategoryView();
+            AppDBContext db = new AppDBContext();
+            SubcategoryView subview = new SubcategoryView(db);
             if (txtProduct.Text != "" && txtRate.Text != "" && txtCustRate.Text != "" && txtQty.Text != "" && cmbCategory.SelectedIndex >= 0)
             {
                 if (btnSave.Text == "Save")
@@ -175,23 +183,18 @@ namespace YashodipPlyAndHardware.View
                     db.Products.Add(product);
                     db.SaveChanges();
 
-                    DialogResult res = MessageBox.Show("Product Saved Successfully...Do you want to add more??", "Yahodip ply", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (res == DialogResult.No)
-                    {
+                   MessageBox.Show("Product Saved Successfully", "Yahodip ply", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                   dataGridView1.Columns.Clear();
                         LoadProducts();
-
-                    }
-                    else
-                    {
-                        LoadProducts();
+                    editdelete();
                         txtProduct.Clear();
                         txtRate.Clear();
                         txtCustRate.Clear();
                         txtQty.Clear();
                         txtDes.Clear();
-                        cmbCategory.SelectedIndex = 0;
+                      //  cmbCategory.SelectedIndex = 0;
                         cmbSub.Enabled = false;
-                    }
+                    txtSearch.Text = "";
 
                 }
 
@@ -242,10 +245,10 @@ namespace YashodipPlyAndHardware.View
 
                         db.SaveChanges();
 
-                        DialogResult res = MessageBox.Show("Product Updated Successfully...", "Yahodip ply", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        if (res == DialogResult.OK)
-                        {
+                        MessageBox.Show("Product Updated Successfully...", "Yahodip ply", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                      dataGridView1.Columns.Clear();
                             LoadProducts();
+                        editdelete();
                             txtProduct.Clear();
                             txtRate.Clear();
                             txtCustRate.Clear();
@@ -253,22 +256,14 @@ namespace YashodipPlyAndHardware.View
                             txtDes.Clear();
                             cmbCategory.SelectedIndex = 0;
                             cmbSub.Enabled = false;
-                        }
-                        else
-                        {
-                            LoadProducts();
-                            txtProduct.Clear();
-                            txtRate.Clear();
-                            txtCustRate.Clear();
-                            txtQty.Clear();
-                            txtDes.Clear();
-                            cmbCategory.SelectedIndex = 0;
-                            cmbSub.Enabled = false;
+                        txtSearch.Text = "";
 
-                        }
+                        
                     }
                     btnSave.Text = "Save";
+                    dataGridView1.Columns.Clear();
                     LoadProducts();
+                    editdelete();
                     txtProduct.Clear();
                     txtRate.Clear();
                     txtCustRate.Clear();
@@ -361,16 +356,18 @@ namespace YashodipPlyAndHardware.View
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            AppDBContext db=new AppDBContext();
-            if (cmbSearch.SelectedItem == "Product") {
+            dataGridView1.Columns.Clear();
+            AppDBContext db = new AppDBContext();
+            if (cmbSearch.SelectedItem == "Product")
+            {
 
                 try
                 {
 
                     var Products = db.Products.Select(p => new
                     {
-                      
-                        
+
+
                         Subcategory = p.Subcategory.SubcategoryName,
                         Category = p.Subcategory.Category.CategoryName,
                         p.ProductName,
@@ -378,10 +375,13 @@ namespace YashodipPlyAndHardware.View
                         p.CustomerRate,
                         p.Quantity,
                         p.Description,
+                        p.ProductId
 
-                    }).Where(p=>p.ProductName.Contains(txtSearch.Text)).ToList();
+                    }).Where(p => p.ProductName.Contains(txtSearch.Text)).ToList();
 
                     dataGridView1.DataSource = Products;
+                    dataGridView1.Columns["ProductId"].Visible = false;
+                     editdelete();
                 }
                 catch (Exception ex)
                 {
@@ -389,7 +389,8 @@ namespace YashodipPlyAndHardware.View
                 }
 
             }
-            else if (cmbSearch.SelectedItem == "Category") {
+            else if (cmbSearch.SelectedItem == "Category")
+            {
                 try
                 {
 
@@ -401,12 +402,15 @@ namespace YashodipPlyAndHardware.View
                         p.Rate,
                         p.CustomerRate,
                         p.Quantity,
-                      
+
                         p.Description,
+                        p.ProductId
 
                     }).Where(p => p.Category.Contains(txtSearch.Text)).ToList();
 
                     dataGridView1.DataSource = Products;
+                    dataGridView1.Columns["ProductId"].Visible = false;
+                    editdelete();
                 }
                 catch (Exception ex)
                 {
@@ -415,7 +419,8 @@ namespace YashodipPlyAndHardware.View
 
 
             }
-            else if(cmbSearch.SelectedItem == "Subcategory") {
+            else if (cmbSearch.SelectedItem == "Subcategory")
+            {
                 try
                 {
 
@@ -427,12 +432,15 @@ namespace YashodipPlyAndHardware.View
                         p.Rate,
                         p.CustomerRate,
                         p.Quantity,
-                     
+
                         p.Description,
+                        p.ProductId
 
                     }).Where(p => p.Subcategory.Contains(txtSearch.Text)).ToList();
 
                     dataGridView1.DataSource = Products;
+                    dataGridView1.Columns["ProductId"].Visible = false;
+                    editdelete();
                 }
                 catch (Exception ex)
                 {
@@ -440,9 +448,10 @@ namespace YashodipPlyAndHardware.View
                 }
 
             }
-            else { 
-            LoadProducts();
-              
+            else
+            {
+                LoadProducts();
+                editdelete();
                 txtProduct.Clear();
                 txtRate.Clear();
                 txtCustRate.Clear();
@@ -451,7 +460,78 @@ namespace YashodipPlyAndHardware.View
                 cmbCategory.SelectedIndex = 0;
                 cmbSub.Enabled = false;
             }
+            
+
         }
+
+        private void txtRate_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            // Allow only one decimal point
+            if (e.KeyChar == '.' && (sender as TextBox).Text.Contains("."))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtCustRate_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            // Allow only one decimal point
+            if (e.KeyChar == '.' && (sender as TextBox).Text.Contains("."))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtQty_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            // Allow only one decimal point
+            if (e.KeyChar == '.' && (sender as TextBox).Text.Contains("."))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void btnAddCategory_Click(object sender, EventArgs e)
+        {
+            CategoryView cv = new CategoryView();
+            cv.Show();
+            LoadCatCombobox();
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            AppDBContext appDBContext = new AppDBContext();
+            SubcategoryView sv = new SubcategoryView(appDBContext);
+            sv.Show();
+            LoadSubCatCombobox();
+        }
+
+        private void cmbSub_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+       
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+      
     }
 }
 

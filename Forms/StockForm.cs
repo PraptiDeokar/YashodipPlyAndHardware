@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +23,7 @@ namespace YashodipPlyAndHardware.Forms
         {
             InitializeComponent();
         }
+       
         public void LoadProducts()
         {
             AppDBContext db = new AppDBContext();
@@ -39,6 +41,8 @@ namespace YashodipPlyAndHardware.Forms
 
                 }).ToList();
 
+               
+
                 dataGridView1.DataSource = Products;
                 dataGridView1.Columns["ProductId"].Visible = false;
 
@@ -49,6 +53,23 @@ namespace YashodipPlyAndHardware.Forms
             }
 
         }
+        public void LoadProductForUpdation(dynamic ps)
+        {
+            
+            try
+            {
+                dataGridView1.DataSource = ps;
+                 
+               
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading data: {ex.Message}");
+            }
+
+        }
+
+
         private void StockForm_Load(object sender, EventArgs e)
         {
             LoadProducts();
@@ -63,7 +84,7 @@ namespace YashodipPlyAndHardware.Forms
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            label1.Visible = true;
+            label1.Visible = false;
             if (txtSearch.Text == "")
             {
                 LoadProducts();
@@ -71,6 +92,7 @@ namespace YashodipPlyAndHardware.Forms
             AppDBContext db = new AppDBContext();
             if (cmbSearch.SelectedItem == "Product")
             {
+                label1.Visible = false;
 
                 try
                 {
@@ -97,6 +119,7 @@ namespace YashodipPlyAndHardware.Forms
             }
             else if (cmbSearch.SelectedItem == "Category")
             {
+                label1.Visible = false;
                 try
                 {
 
@@ -122,6 +145,7 @@ namespace YashodipPlyAndHardware.Forms
             }
             else if (cmbSearch.SelectedItem == "Subcategory")
             {
+                label1.Visible= false;
                 try
                 {
 
@@ -146,9 +170,10 @@ namespace YashodipPlyAndHardware.Forms
             }
             else if (cmbSearch.SelectedItem == "Quantity")
             {
+                label1.Visible=true;
 
-
-                if (txtSearch.Text == "") LoadProducts();
+                if (txtSearch.Text == "" && txtSearch.Text.All(char.IsLetter))
+                    LoadProducts();
                 else
                 {
                     try
@@ -185,9 +210,12 @@ namespace YashodipPlyAndHardware.Forms
         private void cmbSearch_SelectedIndexChanged(object sender, EventArgs e)
         {
             txtSearch.Text = "";
-            label1.Visible = false;
-        }
+            if (cmbSearch.SelectedItem == "Quantity")
+                label1.Visible = true;
+            else
+                label1.Visible = false;
 
+        }
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)

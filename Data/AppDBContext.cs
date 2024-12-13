@@ -22,6 +22,7 @@ namespace YashodipPlyAndHardware.Data
         public DbSet<Bill> BillMaster { get; set; }
 
         public DbSet<BillChild> BillChild { get; set; }
+        public DbSet<SalesSummaryClass> SalesSummaries { get; set; }
 
     }
 }

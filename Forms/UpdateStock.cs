@@ -15,27 +15,30 @@ namespace YashodipPlyAndHardware.Forms
             string str = $"{UtilityClass.cname} {UtilityClass.sname} {UtilityClass.pname}";
             lblname.Text = str;
             txtcurr.Text = Convert.ToString(UtilityClass.qty);
+            panel1.Enabled = false;
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             lblmodify.Text = "+";
-
+            panel1.Enabled = true;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             lblmodify.Text = "-";
+            panel1.Enabled = true;
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
             lblmodify.Text = "Update To";
+            panel1.Enabled = true;
         }
 
         private void btnmodify_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -45,10 +48,10 @@ namespace YashodipPlyAndHardware.Forms
             prod.Quantity = UtilityClass.qty;
             db.SaveChanges();
             MessageBox.Show("Updated successfully...");
-            txtcurr.Text =Convert.ToString(UtilityClass.qty);
-            txtchange.Text="0";
-            txtup.Text="0";
-           
+            txtcurr.Text = Convert.ToString(UtilityClass.qty);
+            txtchange.Text = "0";
+            txtup.Text = "0";
+            panel1.Enabled = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -74,6 +77,23 @@ namespace YashodipPlyAndHardware.Forms
                     UtilityClass.qty = additionalvalue;
                 txtup.Text = Convert.ToString(UtilityClass.qty);
 
+            }
+        }
+
+        private void txtchange_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void txtqty_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            // Allow only one decimal point
+            if (e.KeyChar == '.' && (sender as TextBox).Text.Contains("."))
+            {
+                e.Handled = true;
             }
         }
     }

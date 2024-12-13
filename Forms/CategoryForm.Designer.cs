@@ -33,8 +33,6 @@
             btnSave = new Button();
             txtCategory = new TextBox();
             panel1 = new Panel();
-            button1 = new Button();
-            button2 = new Button();
             label8 = new Label();
             toolTip1 = new ToolTip(components);
             panel1.SuspendLayout();
@@ -48,6 +46,7 @@
             lblCategory.Size = new Size(84, 25);
             lblCategory.TabIndex = 0;
             lblCategory.Text = "Category";
+            lblCategory.Click += lblCategory_Click;
             // 
             // btnSave
             // 
@@ -69,8 +68,6 @@
             // 
             // panel1
             // 
-            panel1.Controls.Add(button1);
-            panel1.Controls.Add(button2);
             panel1.Controls.Add(label8);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
@@ -78,34 +75,11 @@
             panel1.Size = new Size(468, 71);
             panel1.TabIndex = 3;
             // 
-            // button1
-            // 
-            button1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            button1.ForeColor = Color.Red;
-            button1.Location = new Point(375, 17);
-            button1.Name = "button1";
-            button1.Size = new Size(47, 34);
-            button1.TabIndex = 42;
-            button1.Text = "X";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            // 
-            // button2
-            // 
-            button2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            button2.ForeColor = Color.Red;
-            button2.Location = new Point(573, 12);
-            button2.Name = "button2";
-            button2.Size = new Size(47, 34);
-            button2.TabIndex = 41;
-            button2.Text = "X";
-            button2.UseVisualStyleBackColor = true;
-            // 
             // label8
             // 
             label8.AutoSize = true;
             label8.Font = new Font("Segoe UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
-            label8.Location = new Point(95, 9);
+            label8.Location = new Point(133, 9);
             label8.Name = "label8";
             label8.Size = new Size(202, 41);
             label8.TabIndex = 0;
@@ -129,7 +103,8 @@
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Name = "CategoryForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Add Category";
+            Text = "Yashodip Ply";
+            Load += CategoryForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);
@@ -142,9 +117,7 @@
         private Button btnSave;
         private TextBox txtCategory;
         private Panel panel1;
-        private Button button2;
         private Label label8;
-        private Button button1;
         private ToolTip toolTip1;
     }
 }

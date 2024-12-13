@@ -44,7 +44,8 @@ namespace YashodipPlyAndHardware.Migrations
                 name: "IX_Products_CategoryId",
                 table: "Products");
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.
+                umn<string>(
                 name: "CategoryName",
                 table: "Subcategories",
                 type: "nvarchar(max)",

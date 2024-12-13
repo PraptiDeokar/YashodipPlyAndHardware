@@ -8,21 +8,32 @@ namespace YashodipPly.View
 {
     public partial class CategoryView : Form
     {
-        AppDBContext db;
+        private readonly AppDBContext db;
+
         Category cat;
+        int categoryId;
+        //int CatToUpdateId;
+
         public CategoryView()
-        {              
+        {
             InitializeComponent();
             db = new AppDBContext();
+            ////    CatToUpdateId = CategoryId;
+            //  //    cat = db.Categories.FirstOrDefault(c => c.CategoryId == CatToUpdateId);
+            //      btnSave.Text = "Update";
+            //     // label8.Text = "Update Category";
+            //      txtCategory.Text = cat.CategoryName;
+
             LoadCategory();
+
         }
         public void LoadCategory()
         {
-             db=new AppDBContext();
-            
+
+
             try
             {
-               
+
                 var categories = db.Categories.ToList();
                 dataGridView1.DataSource = categories;
             }
@@ -34,13 +45,7 @@ namespace YashodipPly.View
         }
         private void EditCategory(int categoryId)
         {
-            // Find the category by ID and update it as needed
-             cat = db.Categories.Find(categoryId);
-            if (cat != null)
-            {
-                CategoryForm editForm = new CategoryForm(categoryId);
-                LoadCategory();
-            }
+
         }
 
         private void DeleteCategory(int categoryId)
@@ -57,7 +62,7 @@ namespace YashodipPly.View
         {
 
         }
-        
+
         private void button1_Click(object sender, EventArgs e)
         {
             CategoryForm categoryForm = new CategoryForm();
@@ -66,6 +71,7 @@ namespace YashodipPly.View
 
         private void CategoryView_Load(object sender, EventArgs e)
         {
+
             dataGridView1.CellClick += dataGridView1_CellClick;
             LoadCategory();
             DataGridViewButtonColumn editButtonColumn = new DataGridViewButtonColumn();
@@ -123,10 +129,15 @@ namespace YashodipPly.View
                 if (columnName == "Edit")
                 {
                     // Get the selected row's data (e.g., ID of the record)
-                    int categoryId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["CategoryId"].Value);
+                    categoryId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["CategoryId"].Value);
+                    // Find the category by ID and update it as needed
+                    cat = db.Categories.Find(categoryId);
+                    if (cat != null)
+                    {
+                        txtCategory.Text = cat.CategoryName;
+                        btnSave.Text = "Update";
+                    }
 
-                    // Call your edit function or open a form to edit
-                    EditCategory(categoryId);
                 }
                 else if (columnName == "Delete")
                 {
@@ -148,8 +159,90 @@ namespace YashodipPly.View
                             }
                         }
                     }
-                    catch (Exception) { }   
+                    catch (Exception) { }
                 }
+            }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (txtCategory.Text != "" && txtCategory.Text != "0" && btnSave.Text == "Save")
+            {
+                var categoryName = txtCategory.Text.Trim().ToLower();
+                bool categoryExists = db.Categories.Any(c => c.CategoryName.Trim().ToLower() == categoryName);
+
+                if (!categoryExists)
+                {
+                    var category = new Category { CategoryName = txtCategory.Text.Trim() };
+                    db.Categories.Add(category);
+                    db.SaveChanges();
+                    MessageBox.Show("Category Saved Successfully...", "Yahodip Ply", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Category already exists...", "Yahodip Ply", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                
+
+
+                //DialogResult res = MessageBox.Show("Category Saved Successfully...Do you want to add more??", "Yahodip ply", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                //if (res == DialogResult.No)
+                //{
+                //    txtCategory.Text = "";
+                //    LoadCategory();
+                //}
+                //else
+                //{
+                txtCategory.Text = "";
+                LoadCategory();
+                //  }
+
+            }
+            else if (txtCategory.Text != "" && txtCategory.Text != "0" && btnSave.Text == "Update")
+            {
+                if (cat != null)
+                {
+                    cat.CategoryName = txtCategory.Text;
+                    db.SaveChanges();
+                    MessageBox.Show("Category Updated Successfully...", "Yahodip ply", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadCategory();
+                    txtCategory.Text = "";
+                    btnSave.Text = "Save";
+                }
+                else
+                {
+                    MessageBox.Show("Select record...", "Yahodip ply", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+
+            }
+            else if (txtCategory.Text == "" && txtCategory.Text == "0")
+            {
+                MessageBox.Show("Enter Category Name", "Yahodip ply", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+        }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+            var txt = textBox1.Text;
+            if (txt != "")
+            {
+                try
+                {
+                    var categories = db.Categories.Where(c => c.CategoryName.Contains(txt)).ToList();
+                    dataGridView1.DataSource = categories;
+                }
+                catch (Exception) { }
+            }
+            else
+            {
+                LoadCategory();
             }
         }
     }

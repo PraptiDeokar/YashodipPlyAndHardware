@@ -35,6 +35,7 @@
             label2 = new Label();
             button1 = new Button();
             label3 = new Label();
+            button2 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -102,11 +103,23 @@
             label3.TabIndex = 6;
             label3.Text = "Welcome Back";
             // 
+            // button2
+            // 
+            button2.Font = new Font("Segoe UI", 11F, FontStyle.Bold, GraphicsUnit.Point);
+            button2.ForeColor = Color.Red;
+            button2.Location = new Point(423, 21);
+            button2.Name = "button2";
+            button2.Size = new Size(61, 51);
+            button2.TabIndex = 9;
+            button2.Text = "X";
+            button2.UseVisualStyleBackColor = true;
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(523, 276);
+            Controls.Add(button2);
             Controls.Add(label3);
             Controls.Add(button1);
             Controls.Add(textBox2);
@@ -131,5 +144,6 @@
         private Label label2;
         private Button button1;
         private Label label3;
+        private Button button2;
     }
 }
